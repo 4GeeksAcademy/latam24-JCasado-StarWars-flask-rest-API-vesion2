@@ -18,8 +18,8 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
     
-class planets(db.Model):
-    __tablename__ = 'planets'
+class Planet(db.Model):
+    __tablename__ = 'planet'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     terrain = db.Column(db.String(80), unique=False, nullable=False)
@@ -36,8 +36,8 @@ class planets(db.Model):
             "diameter": self.diameter
         }
     
-class characters(db.Model):
-    __tablename__ = 'characters'
+class Character(db.Model):
+    __tablename__ = 'character'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), unique=True, nullable=False)
     hair_color = db.Column(db.String(50), unique=False, nullable=False)
@@ -54,8 +54,8 @@ class characters(db.Model):
             "eye color": self.eye_color
         }
     
-class favouritePlanets(db.Model):
-    __tablename__='favouritePlanets'
+class FavouritePlanet(db.Model):
+    __tablename__='favouritePlanet'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     planet_id = db.Column(db.Integer, db.ForeignKey("planet.id"))
@@ -68,8 +68,8 @@ class favouritePlanets(db.Model):
             "planets": self.planets.serialize(),
         }
     
-class favouriteCharacters(db.Model):
-    __tablename__='favouriteCharacters'
+class FavouriteCharacter(db.Model):
+    __tablename__='favouriteCharacter'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     character_id = db.Column(db.Integer, db.ForeignKey("character.id"))
