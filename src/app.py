@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Planet, Character
+from models import db, User, Planet, Character, FavouriteCharacter, FavouritePlanet
 
 #Handle/serialize errors like a JSON object
 
@@ -76,6 +76,7 @@ def get_all_characters():
     characters_serialized = list(map(lambda x: x.serialize(), character))
     return jsonify({"msg": "Completed", "Characters": characters_serialized})
 
+
 @app.route('/characters/<int:character_id>', methods=['GET'])
 def handle_character(character_id):
     single_character = Character.query.get(character_id)
@@ -85,12 +86,11 @@ def handle_character(character_id):
     
     response_body = {
         "msg": "Hello, this is your GET /characters response",
-        "planets_id": character_id,
-        "planets_info": single_character.serialize()
+        "character_id": character_id,
+        "character_info": single_character.serialize()
     }
 
     return jsonify(response_body), 200
-
 
 @app.route("/user", methods= ['GET'])
 def get_all_users():
@@ -107,14 +107,92 @@ def handle_users(user_id):
 
     if single_user is None:
        raise APIException(f"User ID not found {user_id}", status_code=400)
-    
-    response_body = {
-        "msg": "Hello, this is your GET /users response ",
-        "user_id": user_id,
-        "user_info": single_user.serialize()
-    }
 
-    return jsonify(response_body), 200
+@app.route('/user/favourite/<int:users_id>', methods=['GET'])
+def user_favourites(user_id):
+
+    favourite_planet = FavouritePlanet.query.filter_by(user_id = user_id)
+    planet = [planet.serialize() for planet in favourite_planet]
+
+    favourite_character = FavouriteCharacter.query.filter_by(user_id = user_id)
+    character = [character.serialize() for character in favourite_character]
+    
+    return jsonify("Favourites", planet, character ), 200
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
+def add_fav_planet(planet_id):
+    select_planet = Planet.query.get(planet_id)
+    body =  request.json
+    id_user = body.get("id_user")
+    actual_user = User.query.get(id_user)
+
+    favourite_planet = FavouritePlanet(
+        user = actual_user,
+        planets = select_planet
+    )
+
+    try:
+        db.session.add(favourite_planet)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+
+    return jsonify({}), 200
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_favouritePlanet(planet_id):
+    delete_planet = FavouritePlanet.query.get(planet_id)
+
+    try:
+        db.session.delete(delete_planet)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+    return jsonify({}), 200
+
+@app.route('/favourite/character/<int:character_id>', methods=['POST'])
+def add_favouriteCharacter(character_id):
+    select_character = Character.query.get(character_id)
+    body = request.json
+    user_id = body.get("user_id")
+    actual_user = User.query.get(user_id)
+
+    favourite_character = FavouriteCharacter(
+        user = actual_user,
+        peoples = select_character
+    )
+    try:
+        db.session.add(favourite_character)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+    return jsonify({}), 200
+
+@app.route('/favorite/character/<int:character_id>', methods=['DELETE'])
+def delete_favouriteCharaceter(character_id):
+    delete_character = FavouriteCharacter.query.get(character_id)
+    try:
+        db.session.delete(delete_character)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+    return jsonify({}), 200
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
