@@ -23,7 +23,7 @@ class Planet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     terrain = db.Column(db.String(80), unique=False, nullable=False)
-    diameter = db.Column(db.Boolean(), unique=False, nullable=False)
+    diameter = db.Column(db.Integer, unique=False, nullable=False)
 
     def __repr__(self):
         return f"planet {self.name} with ID {self.id}" 
@@ -42,7 +42,7 @@ class Character(db.Model):
     name = db.Column(db.String(30), unique=True, nullable=False)
     hair_color = db.Column(db.String(50), unique=False, nullable=False)
     eye_color = db.Column(db.String(50), unique=False, nullable=False)
-
+    
     def __rep__(self):
         return f"characters {self.name} with ID {self.id}"
     

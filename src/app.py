@@ -31,6 +31,7 @@ setup_admin(app)
 
 @app.route('/')
 def sitemap():
+    
     return generate_sitemap(app)
 
 @app.errorhandler(APIException)
@@ -70,6 +71,50 @@ def handle_planet(planet_id):
 
     return jsonify(response_body), 200
 
+
+@app.route('/planet', methods=['POST'])
+def add_planet():
+    body =  request.json
+    name = body.get("name", None)
+    terrain = body.get("terrain", None)
+    diameter = body.get("diameter", None)
+
+    planet = Planet(
+        name = name,
+        terrain = terrain,
+        diameter = diameter
+    )
+
+    try:
+        db.session.add(planet)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+
+    return jsonify({}), 200
+
+
+@app.route('/planet/<int:planet_id>', methods=['DELETE'])
+def delete_planet(planet_id):
+    delete_planet = Planet.query.get(planet_id)
+
+    try:
+        db.session.delete(delete_planet)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+    
+    return jsonify({}), 200
+
+
 @app.route("/characters", methods= ['GET'])
 def get_all_characters():
     character = Character.query.all()
@@ -91,6 +136,50 @@ def handle_character(character_id):
     }
 
     return jsonify(response_body), 200
+
+
+@app.route('/character', methods=['POST'])
+def add_character():
+    body =  request.json
+    name = body.get("name", None)
+    hair_color = body.get("hair color", None)
+    eye_color = body.get("eye color", None)
+
+    character = Character(
+        name = name,
+        hair_color = hair_color,
+        eye_color = eye_color
+    )
+
+    try:
+        db.session.add(character)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+
+    return jsonify({}), 200
+
+
+@app.route('/character/<int:character_id>', methods=['DELETE'])
+def delete_character(character_id):
+    delete_character = Character.query.get(character_id)
+
+    try:
+        db.session.delete(delete_character)
+        db.session.commit()
+    except Exception as error:
+        db.session.rollback()
+        return jsonify({
+            "message": "Internal error",
+            "error": error.args
+        })
+    
+    return jsonify({}), 200
+
 
 @app.route("/user", methods= ['GET'])
 def get_all_users():
@@ -123,8 +212,8 @@ def user_favourites(user_id):
 def add_fav_planet(planet_id):
     select_planet = Planet.query.get(planet_id)
     body =  request.json
-    id_user = body.get("id_user")
-    actual_user = User.query.get(id_user)
+    user_id = body.get("user_id")
+    actual_user = User.query.get(user_id)
 
     favourite_planet = FavouritePlanet(
         user = actual_user,
@@ -143,6 +232,7 @@ def add_fav_planet(planet_id):
 
     return jsonify({}), 200
 
+
 @app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
 def delete_favouritePlanet(planet_id):
     delete_planet = FavouritePlanet.query.get(planet_id)
@@ -156,7 +246,9 @@ def delete_favouritePlanet(planet_id):
             "message": "Internal error",
             "error": error.args
         })
+    
     return jsonify({}), 200
+
 
 @app.route('/favourite/character/<int:character_id>', methods=['POST'])
 def add_favouriteCharacter(character_id):
@@ -178,7 +270,9 @@ def add_favouriteCharacter(character_id):
             "message": "Internal error",
             "error": error.args
         })
+    
     return jsonify({}), 200
+
 
 @app.route('/favorite/character/<int:character_id>', methods=['DELETE'])
 def delete_favouriteCharaceter(character_id):
@@ -192,7 +286,9 @@ def delete_favouriteCharaceter(character_id):
             "message": "Internal error",
             "error": error.args
         })
+    
     return jsonify({}), 200
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
