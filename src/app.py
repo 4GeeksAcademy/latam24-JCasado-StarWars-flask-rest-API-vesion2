@@ -93,9 +93,11 @@ def add_planet():
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
 
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Planet created successfully"
+    }), 200
 
 
 @app.route('/planet/<int:planet_id>', methods=['DELETE'])
@@ -110,9 +112,11 @@ def delete_planet(planet_id):
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
     
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Planet deleted successfully"
+    }), 200
 
 
 @app.route("/characters", methods= ['GET'])
@@ -159,9 +163,11 @@ def add_character():
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
 
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Character created successfully"
+    }), 200
 
 
 @app.route('/character/<int:character_id>', methods=['DELETE'])
@@ -176,9 +182,11 @@ def delete_character(character_id):
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
     
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Character deleted successfully"
+    }), 200
 
 
 @app.route("/user", methods= ['GET'])
@@ -228,9 +236,11 @@ def add_fav_planet(planet_id):
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
 
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Favourite planet created successfully"
+    }), 200
 
 
 @app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
@@ -245,9 +255,11 @@ def delete_favouritePlanet(planet_id):
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
     
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Favourite planet deleted successfully"
+    }), 200
 
 
 @app.route('/favourite/character/<int:character_id>', methods=['POST'])
@@ -269,9 +281,11 @@ def add_favouriteCharacter(character_id):
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
     
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Favourite character created successfully"
+    }), 200
 
 
 @app.route('/favorite/character/<int:character_id>', methods=['DELETE'])
@@ -285,9 +299,11 @@ def delete_favouriteCharaceter(character_id):
         return jsonify({
             "message": "Internal error",
             "error": error.args
-        })
+        }), 500
     
-    return jsonify({}), 200
+    return jsonify({
+        "message": "Favourite planet deleted successfully"
+    }), 200
 
 
 # this only runs if `$ python src/app.py` is executed
